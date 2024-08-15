@@ -19,9 +19,7 @@ router.post('/register', async function (req, res, next) {
 
 router.get("/get-std", async function (req, res, next) {
     try {
-        const MongoClient = mongodb.MongoClient
-        const server = await MongoClient.connect('')
-        const db = server.db("sms")
+        const db =await getDb();
         const collection = db.collection("students")
         const result = await collection.find().toArray()
         res.send(result)
