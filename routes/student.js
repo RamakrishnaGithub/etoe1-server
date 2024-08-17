@@ -56,4 +56,13 @@ router.delete("/delete-std/:id", async function (req, res, next) {
         res.send(ex)
     }
 })
+
+router.post("/login", function (req, res, next) {
+    const { uid, pwd } = req.body
+    if (uid == "nit" && pwd == "nitnit") {
+        res.send([{ uid, pwd }])
+    } else {
+        res.send([])
+    }
+})
 module.exports = router;
