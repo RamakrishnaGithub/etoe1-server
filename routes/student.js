@@ -2,23 +2,27 @@ const express = require('express');
 const mongodb = require("mongodb");
 const objectId = mongodb.ObjectId;
 const getDb = require('../common/dbConn');
+const jwt = require("jsonwebtoken")
 const router = express.Router();
+var validateToken=require("../common/validateToken")
 
 
+router.post('/register',
+    function (req, res, next) {
+        const token = req.headers.authorization
+    }, async function (req, res, next) {
+        try {
+            const data = req.body.data
+            const db = await getDb()
+            const collection = db.collection('students')
+            const result = await collection.insertOne(data)
+            res.send(result)
+        } catch (ex) {
+            res.send(ex.message)
+        }
+    })
 
-router.post('/register', async function (req, res, next) {
-    try {
-        const data = req.body.data
-        const db = await getDb()
-        const collection = db.collection('students')
-        const result = await collection.insertOne(data)
-        res.send(result)
-    } catch (ex) {
-        res.send(ex.message)
-    }
-})
-
-router.get("/get-std", async function (req, res, next) {
+router.get("/get-std",validateToken,  async function (req, res, next) {
     try {
         const db = await getDb();
         const collection = db.collection("students")
@@ -29,7 +33,7 @@ router.get("/get-std", async function (req, res, next) {
     }
 })
 
-router.put("/update-std", async function (req, res, next) {
+router.put("/update-std",validateToken, async function (req, res, next) {
     try {
         const id = req.query.id
         const data = req.body.data
@@ -44,7 +48,7 @@ router.put("/update-std", async function (req, res, next) {
 
 })
 
-router.delete("/delete-std/:id", async function (req, res, next) {
+router.delete("/delete-std/:id",validateToken, async function (req, res, next) {
     try {
         const id = req.params.id
         const db = await getDb()
@@ -60,7 +64,8 @@ router.delete("/delete-std/:id", async function (req, res, next) {
 router.post("/login", function (req, res, next) {
     const { uid, pwd } = req.body
     if (uid === "nit" && pwd === "nitnit") {
-        res.send([{ uid, pwd }])
+        const token = jwt.sign({ uid, pwd }, "appToken")
+        res.send([{ uid, pwd, token }])
     } else {
         res.send([])
     }
