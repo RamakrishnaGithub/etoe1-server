@@ -7,10 +7,8 @@ const router = express.Router();
 var validateToken=require("../common/validateToken")
 
 
-router.post('/register',
-    function (req, res, next) {
-        const token = req.headers.authorization
-    }, async function (req, res, next) {
+router.post('/register',validateToken
+    , async function (req, res, next) {
         try {
             const data = req.body.data
             const db = await getDb()
